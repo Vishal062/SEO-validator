@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
             const social = await fetchSocialTagsWithPuppeteer(url);
             og = social.og;
             twitter = social.twitter;
-          } catch (e) {
+          } catch (_e: unknown) {
             // fallback: leave og and twitter empty
           }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
           try {
             const rawSchema = await fetchSchemaWithPuppeteer(url);
             schema = rawSchema.map(filterSchema);
-          } catch (e) {
+          } catch (_e: unknown) {
             // fallback: leave schema empty
           }
 
@@ -68,10 +68,10 @@ export async function POST(req: NextRequest) {
             og,
             twitter,
           };
-        } catch (err: any) {
+        } catch (_err: unknown) {
           return {
             url,
-            error: err.message || 'Failed to fetch',
+            error: (_err as Error).message || 'Failed to fetch',
           };
         }
       };

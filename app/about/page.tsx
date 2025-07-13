@@ -9,7 +9,7 @@ export default function AboutPage() {
         <div className="text-gray-700 text-base md:text-lg leading-relaxed space-y-6">
           <section>
             <p className="text-gray-800 font-semibold text-lg mb-2">It all started with a sprint demo.</p>
-            <p>The QA lead pointed out something odd — the meta description on the UAT build was showing “Lorem Ipsum.” Everyone laughed. But when we pushed to production and saw that the title tag still said "Test Page", it wasn’t funny anymore.</p>
+            <p>The QA lead pointed out something odd — the meta description on the UAT build was showing &quot;Lorem Ipsum.&quot; Everyone laughed. But when we pushed to production and saw that the title tag still said &quot;Test Page&quot;, it wasn&#39;t funny anymore.</p>
           </section>
           <section className="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-400">
             <p className="mb-2">We were a team of developers and testers working on fast-moving websites with weekly (sometimes daily) releases. Clients expected perfect pages — optimized, clean, and SEO-ready. But in the chaos of deployments, the SEO tags were often overlooked. Not because we didn’t care, but because there was no simple way to validate them at scale.</p>
