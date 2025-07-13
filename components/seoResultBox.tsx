@@ -49,60 +49,74 @@ function OverviewFields({ data }: { data: any }) {
     return null;
   }
   return (
-    <div className="space-y-4">
-      {/* Title */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">📝</span>
-        <div className="flex-1">
-          <div className="font-bold text-blue-900 flex items-center gap-1">Title <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.title || <span className="text-red-600 font-semibold">Missing</span>}</div>
+    <div className="w-full overflow-x-auto">
+      <div className="space-y-4 min-w-0">
+        {/* Title */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">📝</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-blue-900 flex items-center gap-1">Title <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.title || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.title, 'Title', 'text')}
+          </div>
         </div>
-        {getBadge(data.title, 'Title', 'text')}
-      </div>
-      {/* Description */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">💬</span>
-        <div className="flex-1">
-          <div className="font-bold text-green-900 flex items-center gap-1">Description <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.description || <span className="text-red-600 font-semibold">Missing</span>}</div>
+        {/* Description */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">💬</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-green-900 flex items-center gap-1">Description <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.description || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.description, 'Description', 'text')}
+          </div>
         </div>
-        {getBadge(data.description, 'Description', 'text')}
-      </div>
-      {/* URL */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">🔗</span>
-        <div className="flex-1">
-          <div className="font-bold text-purple-900 flex items-center gap-1">URL <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.url || <span className="text-red-600 font-semibold">Missing</span>}</div>
+        {/* URL */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">🔗</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-purple-900 flex items-center gap-1">URL <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.url || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.url, 'URL', 'url')}
+          </div>
         </div>
-        {getBadge(data.url, 'URL', 'url')}
-      </div>
-      {/* Canonical */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">📍</span>
-        <div className="flex-1">
-          <div className="font-bold text-orange-900 flex items-center gap-1">Canonical <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.canonical || <span className="text-red-600 font-semibold">Missing</span>}</div>
+        {/* Canonical */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">📍</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-orange-900 flex items-center gap-1">Canonical <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.canonical || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.canonical, 'Canonical', 'url')}
+          </div>
         </div>
-        {getBadge(data.canonical, 'Canonical', 'url')}
-      </div>
-      {/* Robots Tag */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">🏷️</span>
-        <div className="flex-1">
-          <div className="font-bold text-pink-900 flex items-center gap-1">Robots Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.robotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+        {/* Robots Tag */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">🏷️</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-pink-900 flex items-center gap-1">Robots Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.robotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.robotsTag, 'Robots Tag', data.robotsTag ? 'tag' : 'text')}
+          </div>
         </div>
-        {getBadge(data.robotsTag, 'Robots Tag', data.robotsTag ? 'tag' : 'text')}
-      </div>
-      {/* X-Robots-Tag */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-        <span className="text-xl">🏷️</span>
-        <div className="flex-1">
-          <div className="font-bold text-pink-900 flex items-center gap-1">X-Robots-Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
-          <div className="text-gray-900 text-base">{data.xRobotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+        {/* X-Robots-Tag */}
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <span className="text-xl flex-shrink-0">🏷️</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-pink-900 flex items-center gap-1">X-Robots-Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
+            <div className="text-gray-900 text-base break-words">{data.xRobotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+          </div>
+          <div className="flex-shrink-0">
+            {getBadge(data.xRobotsTag, 'X-Robots-Tag', data.xRobotsTag ? 'tag' : 'text')}
+          </div>
         </div>
-        {getBadge(data.xRobotsTag, 'X-Robots-Tag', data.xRobotsTag ? 'tag' : 'text')}
       </div>
     </div>
   );
@@ -129,18 +143,20 @@ function HeadingsList({ headings }: { headings: { level: string, text: string }[
     }
   };
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end mb-2">
-        <button onClick={copyHeadings} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
-          <span>📋</span> {copied ? 'Copied!' : 'Copy'}
-        </button>
-      </div>
-      {headings && headings.length > 0 ? headings.map((h, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-          <span className={`px-2 py-1 rounded font-mono text-xs font-bold ${badgeColor(h.level)}`}>{`<${h.level.toUpperCase()}>`}</span>
-          <span className="text-base text-gray-900">{h.text}</span>
+    <div className="w-full overflow-x-auto">
+      <div className="space-y-4 min-w-0">
+        <div className="flex justify-end mb-2">
+          <button onClick={copyHeadings} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
+            <span>📋</span> {copied ? 'Copied!' : 'Copy'}
+          </button>
         </div>
-      )) : <div className="text-red-600 font-semibold">No headings found.</div>}
+        {headings && headings.length > 0 ? headings.map((h, i) => (
+          <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <span className={`px-2 py-1 rounded font-mono text-xs font-bold flex-shrink-0 ${badgeColor(h.level)}`}>{`<${h.level.toUpperCase()}>`}</span>
+            <span className="text-base text-gray-900 break-words min-w-0 flex-1">{h.text}</span>
+          </div>
+        )) : <div className="text-red-600 font-semibold">No headings found.</div>}
+      </div>
     </div>
   );
 }
@@ -155,22 +171,24 @@ function LinksList({ links }: { links: { href?: string, anchor: string }[] }) {
     setTimeout(() => setCopied(false), 1200);
   };
   return (
-    <div className="space-y-6">
-      <div className="flex justify-end mb-2">
-        <button onClick={copyLinks} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
-          <span>📋</span> {copied ? 'Copied!' : 'Copy'}
-        </button>
-      </div>
-      {links && links.length > 0 ? links.map((l, i) => (
-        <div key={i} className="space-y-1">
-          <div className={l.href ? "font-bold text-black break-all whitespace-pre-line" : "font-bold text-red-600 break-all whitespace-pre-line"}>
-            {l.href || 'Undefined (No href attribute)'}
-          </div>
-          <div className="text-base text-black break-all whitespace-pre-line">
-            <span className="font-bold">Anchor:</span> {l.anchor || <span className="text-red-600 font-semibold">Missing Anchor</span>}
-          </div>
+    <div className="w-full overflow-x-auto">
+      <div className="space-y-6 min-w-0">
+        <div className="flex justify-end mb-2">
+          <button onClick={copyLinks} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
+            <span>📋</span> {copied ? 'Copied!' : 'Copy'}
+          </button>
         </div>
-      )) : <div className="text-red-600 font-semibold">No links found.</div>}
+        {links && links.length > 0 ? links.map((l, i) => (
+          <div key={i} className="space-y-1">
+            <div className={l.href ? "font-bold text-black break-all whitespace-pre-line" : "font-bold text-red-600 break-all whitespace-pre-line"}>
+              {l.href || 'Undefined (No href attribute)'}
+            </div>
+            <div className="text-base text-black break-all whitespace-pre-line">
+              <span className="font-bold">Anchor:</span> {l.anchor || <span className="text-red-600 font-semibold">Missing Anchor</span>}
+            </div>
+          </div>
+        )) : <div className="text-red-600 font-semibold">No links found.</div>}
+      </div>
     </div>
   );
 }
@@ -213,29 +231,31 @@ function SchemaTable({ schema }: { schema: any[] }) {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-4">
-          <span className="text-xl font-bold text-purple-700">Schema</span>
+    <div className="w-full overflow-x-auto">
+      <div className="bg-white rounded-xl p-4 md:p-6 shadow space-y-4 min-w-0">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-4">
+            <span className="text-xl font-bold text-purple-700">Schema</span>
+          </div>
+          <button onClick={exportSchema} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
+            <span>⬇️</span> Export Schema
+          </button>
         </div>
-        <button onClick={exportSchema} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold">
-          <span>⬇️</span> Export Schema
-        </button>
-      </div>
-      <div className="text-gray-500 text-sm mb-4">
-        Schema is a form of microdata which helps add context for search engines regarding what a web page is about. You don't <span className="font-semibold">need</span> to have it, though it has <span className="font-semibold">many use cases</span>. It's usually fine if this tab is empty.
-      </div>
-      {schema && schema.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-separate border-spacing-y-1">
-            <tbody>
-              {schema.map((obj, i) => renderRows(obj, 0))}
-            </tbody>
-          </table>
+        <div className="text-gray-500 text-sm mb-4">
+          Schema is a form of microdata which helps add context for search engines regarding what a web page is about. You don't <span className="font-semibold">need</span> to have it, though it has <span className="font-semibold">many use cases</span>. It's usually fine if this tab is empty.
         </div>
-      ) : (
-        <div className="text-gray-400 italic">No schema found on this page.</div>
-      )}
+        {schema && schema.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-separate border-spacing-y-1">
+              <tbody>
+                {schema.map((obj, i) => renderRows(obj, 0))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-gray-400 italic">No schema found on this page.</div>
+        )}
+      </div>
     </div>
   );
 }
@@ -262,33 +282,35 @@ function SocialFields({ data }: { data: any }) {
     'twitter:image',
   ];
   return (
-    <div className="bg-white rounded-xl p-6 shadow space-y-8">
-      {/* Open Graph Section */}
-      <div>
-        <div className="text-xl font-bold text-purple-500 mb-4">Open Graph (Facebook)</div>
-        <div className="space-y-2">
-          {ogKeys.map(key => (
-            <div key={key}>
-              <div className="text-purple-600 font-semibold text-sm">{key}</div>
-              <div className={og[key] ? 'text-gray-900' : 'text-red-600 font-semibold'}>
-                {og[key] || 'Missing'}
+    <div className="w-full overflow-x-auto">
+      <div className="bg-white rounded-xl p-4 md:p-6 shadow space-y-8 min-w-0">
+        {/* Open Graph Section */}
+        <div>
+          <div className="text-xl font-bold text-purple-500 mb-4">Open Graph (Facebook)</div>
+          <div className="space-y-2">
+            {ogKeys.map(key => (
+              <div key={key}>
+                <div className="text-purple-600 font-semibold text-sm">{key}</div>
+                <div className={og[key] ? 'text-gray-900 break-words' : 'text-red-600 font-semibold'}>
+                  {og[key] || 'Missing'}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-      {/* Twitter Section */}
-      <div>
-        <div className="text-xl font-bold text-blue-500 mb-4">Twitter</div>
-        <div className="space-y-2">
-          {twitterKeys.map(key => (
-            <div key={key}>
-              <div className="text-blue-600 font-semibold text-sm">{key}</div>
-              <div className={twitter[key] ? 'text-gray-900' : 'text-red-600 font-semibold'}>
-                {twitter[key] || 'Missing'}
+        {/* Twitter Section */}
+        <div>
+          <div className="text-xl font-bold text-blue-500 mb-4">Twitter</div>
+          <div className="space-y-2">
+            {twitterKeys.map(key => (
+              <div key={key}>
+                <div className="text-blue-600 font-semibold text-sm">{key}</div>
+                <div className={twitter[key] ? 'text-gray-900 break-words' : 'text-red-600 font-semibold'}>
+                  {twitter[key] || 'Missing'}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -311,13 +333,13 @@ export default function SeoResultBox({ data }: Props) {
   }
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-lg max-w-2xl mx-auto space-y-6">
+    <div className="p-4 bg-white rounded-2xl shadow-lg space-y-6 text-xs md:text-sm w-full">
       {/* Tab Bar */}
-      <div className="flex gap-2 border-b mb-4 pb-2">
+      <div className="flex flex-wrap gap-2 border-b mb-4 pb-2 w-full">
         {TABS.map((t) => (
           <button
             key={t}
-            className={`px-4 py-1 rounded-t font-medium focus:outline-none transition-colors duration-150 ${tab === t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+            className={`px-3 py-1 rounded-t font-medium focus:outline-none transition-colors duration-150 text-xs md:text-sm ${tab === t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
             onClick={() => setTab(t)}
           >
             {t}
