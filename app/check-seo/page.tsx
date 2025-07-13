@@ -10,6 +10,7 @@ export default function CheckSeoPage() {
   const [urls, setUrls] = useState([""]);
   const [loading, setLoading] = useState(false);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
+  const [error, setError] = useState("");
   const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   // Use Redux for results
@@ -41,12 +42,30 @@ export default function CheckSeoPage() {
     const updated = [...urls];
     updated[index] = value;
     setUrls(updated);
+    setError(""); // Clear error on change
   };
 
-  const addField = () => setUrls([...urls, ""]);
+  const addField = () => {
+    setUrls([...urls, ""]);
+    setError("");
+  };
+
+  const deleteField = (index: number) => {
+    if (urls.length === 1) return;
+    const updated = urls.filter((_, i) => i !== index);
+    setUrls(updated);
+    setError("");
+  };
+
+  const hasValidUrl = urls.length > 0 && urls.every((url) => url.trim() !== "");
 
   const fetchSEO = async () => {
+    if (!hasValidUrl) {
+      setError(urls.length === 1 ? "Enter the URL first." : "Please enter a URL in every box.");
+      return;
+    }
     setLoading(true);
+    setError("");
     try {
       const res = await axios.post("/api/seo", { urls });
       // Save results to Redux
@@ -90,28 +109,51 @@ export default function CheckSeoPage() {
         <div className="md:w-1/2 space-y-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Enter URLs</h2>
           {urls.map((url, i) => (
-            <input
-              key={i}
-              value={url}
-              onChange={(e) => handleChange(i, e.target.value)}
-              placeholder="https://example.com"
-              className="w-full p-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none bg-white/80 backdrop-blur-sm text-black placeholder-black"
-            />
+            <div key={i} className="flex items-center gap-2 mb-2">
+              <input
+                value={url}
+                onChange={(e) => handleChange(i, e.target.value)}
+                placeholder="https://example.com"
+                className="w-full p-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none bg-white/80 backdrop-blur-sm text-black placeholder-black"
+              />
+              {urls.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => deleteField(i)}
+                  className="group relative p-2 rounded-full hover:bg-red-100 transition"
+                  title="Delete this URL"
+                >
+                  <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="absolute left-1/2 -translate-x-1/2 top-8 z-10 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs rounded px-2 py-1 pointer-events-none transition-opacity whitespace-nowrap">Delete this URL</span>
+                </button>
+              )}
+            </div>
           ))}
-          <div className="flex gap-3">
-            <button
-              onClick={addField}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-            >
-              + Add URL
-            </button>
+          <div className="flex gap-3 items-center">
             <button
               onClick={fetchSEO}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+              disabled={!hasValidUrl || loading}
+              className={`px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               Check SEO
             </button>
+            <button
+              type="button"
+              onClick={addField}
+              className="group relative p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+              aria-label="Add more URL'S here"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="absolute left-1/2 -translate-x-1/2 top-12 z-10 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs rounded px-2 py-1 pointer-events-none transition-opacity whitespace-nowrap">Add more URL'S here</span>
+            </button>
           </div>
+          {error && (
+            <div className="text-red-600 text-sm mt-2">{error}</div>
+          )}
         </div>
 
         {/* Result Side */}

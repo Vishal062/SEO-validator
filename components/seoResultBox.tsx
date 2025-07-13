@@ -163,10 +163,10 @@ function LinksList({ links }: { links: { href?: string, anchor: string }[] }) {
       </div>
       {links && links.length > 0 ? links.map((l, i) => (
         <div key={i} className="space-y-1">
-          <div className={l.href ? "font-bold text-black break-all" : "font-bold text-red-600 break-all"}>
+          <div className={l.href ? "font-bold text-black break-all whitespace-pre-line" : "font-bold text-red-600 break-all whitespace-pre-line"}>
             {l.href || 'Undefined (No href attribute)'}
           </div>
-          <div className="text-base text-black">
+          <div className="text-base text-black break-all whitespace-pre-line">
             <span className="font-bold">Anchor:</span> {l.anchor || <span className="text-red-600 font-semibold">Missing Anchor</span>}
           </div>
         </div>
@@ -300,9 +300,12 @@ export default function SeoResultBox({ data }: Props) {
 
   if (data.error) {
     return (
-      <div className="p-4 border rounded bg-red-100">
-        <h3 className="text-lg font-semibold">{data.url}</h3>
-        <p>Error: {data.error}</p>
+      <div className="p-6 bg-red-50 border border-red-300 rounded-2xl shadow-lg max-w-2xl mx-auto my-4 flex items-start gap-4">
+        <div className="text-red-500 text-2xl mt-1">❌</div>
+        <div>
+          <h3 className="text-lg font-bold text-red-700 break-all">{data.url}</h3>
+          <p className="mt-1 text-base text-red-600 font-semibold">Error: {data.error}</p>
+        </div>
       </div>
     );
   }
