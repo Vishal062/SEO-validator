@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the initial state for SEO results
 export interface SeoState {
-  results: any[];
+  results: unknown[];
 }
 
 const initialState: SeoState = {
@@ -15,7 +15,7 @@ const seoSlice = createSlice({
   initialState,
   reducers: {
     // Set the SEO results (replace all)
-    setResults(state, action: PayloadAction<any[]>) {
+    setResults(state, action: PayloadAction<unknown[]>) {
       state.results = action.payload;
     },
     // Clear all SEO results

@@ -87,8 +87,10 @@ export default function CheckSeoPage() {
       const res = await axios.post("/api/seo", { urls });
       // Save results to Redux
       dispatch(setResults(res.data.results));
-    } catch (err) {
-      console.error("Failed:", err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Failed:", err);
+      }
     } finally {
       setLoading(false);
     }
@@ -231,7 +233,7 @@ export default function CheckSeoPage() {
                       scrollbarColor: '#cbd5e1 #f1f5f9'
                     }}
                   >
-                    {results.map((r: any, i: number) => <SeoResultBox key={i} data={r} />)}
+                    {results.map((r: unknown, i: number) => <SeoResultBox key={i} data={r} />)}
                   </div>
                   {/* Custom scrollbar styling for webkit browsers */}
                   <style jsx>{`

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { fetchSchemaWithPuppeteer, filterSchema, fetchSchemaWithCheerio, fetchSocialTagsWithPuppeteer } from './helpers';
+import { fetchSchemaWithPuppeteer, filterSchema, fetchSocialTagsWithPuppeteer } from './helpers';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
           const social = await fetchSocialTagsWithPuppeteer(url);
           og = social.og;
           twitter = social.twitter;
-        } catch (e) {
+        } catch (_e: unknown) {
           // fallback: leave og and twitter empty
         }
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         try {
           const rawSchema = await fetchSchemaWithPuppeteer(url);
           schema = rawSchema.map(filterSchema);
-        } catch (e) {
+        } catch (_e: unknown) {
           // fallback: leave schema empty
         }
 

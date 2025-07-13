@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { seoReducer, SeoState } from './seoSlice';
+import { seoReducer } from './seoSlice';
 
 // Create the Redux store and add the SEO slice reducer
 export const store = configureStore({

@@ -15,7 +15,7 @@ const TABS = [
   // 'Advanced',
 ];
 
-function getBadge(value: any, label: string, type: 'text' | 'url' | 'tag' = 'text') {
+function getBadge(value: string | undefined, label: string, type: 'text' | 'url' | 'tag' = 'text') {
   if (!value) {
     return <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Missing</span>;
   }
@@ -33,7 +33,7 @@ function getBadge(value: any, label: string, type: 'text' | 'url' | 'tag' = 'tex
 
 // Modular OverviewFields component
 function OverviewFields({ data }: { data: any }) {
-  function getBadge(value: any, label: string, type: 'text' | 'url' | 'tag' = 'text') {
+  function getBadge(value: string | undefined, label: string, type: 'text' | 'url' | 'tag' = 'text') {
     if (!value) {
       return <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Missing</span>;
     }

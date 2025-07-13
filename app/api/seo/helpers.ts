@@ -6,16 +6,14 @@ const allowedSchemaKeys = new Set([
   'aggregateRating', 'reviewCount', 'mainEntity', 'acceptedAnswer', 'offers', 'offeredBy', 'url', 'publisher', 'reviewRating', 'author'
 ]);
 
-export function filterSchema(obj: any): any {
+export function filterSchema(obj: unknown): unknown {
   if (Array.isArray(obj)) {
     return obj.map(filterSchema);
   } else if (obj && typeof obj === 'object') {
-    const filtered: any = {};
-    for (const key in obj) {
+    const filtered: Record<string, unknown> = {};
+    for (const key in obj as Record<string, unknown>) {
       if (allowedSchemaKeys.has(key)) {
-        filtered[key] = filterSchema(obj[key]);
-      } else if (key === '@type' && obj[key]) {
-        filtered[key] = obj[key];
+        filtered[key] = filterSchema((obj as Record<string, unknown>)[key]);
       }
     }
     return filtered;
@@ -23,45 +21,27 @@ export function filterSchema(obj: any): any {
   return obj;
 }
 
-export async function fetchSchemaWithCheerio(html: string): Promise<any[]> {
+export async function fetchSchemaWithCheerio(html: string): Promise<unknown[]> {
   const $ = cheerio.load(html);
-  const schema: any[] = [];
+  const schema: unknown[] = [];
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
-      const json = $(el).html();
-      if (json) {
-        const parsed = JSON.parse(json);
-        if (Array.isArray(parsed)) schema.push(...parsed);
-        else schema.push(parsed);
-      }
-    } catch { }
+      const json = JSON.parse($(el).html() || '{}');
+      schema.push(filterSchema(json));
+    } catch (_e: unknown) {
+      // skip
+    }
   });
   return schema;
 }
 
-export async function fetchSchemaWithPuppeteer(url: string, timeout = 15000): Promise<any[]> {
+export async function fetchSchemaWithPuppeteer(url: string, timeout = 15000): Promise<unknown[]> {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   const page = await browser.newPage();
-
-  // Block images, stylesheets, and fonts
-  await page.setRequestInterception(true);
-  page.on('request', (req) => {
-    if (['image', 'stylesheet', 'font'].includes(req.resourceType())) req.abort();
-    else req.continue();
-  });
-
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
-  const schemas = await page.$$eval('script[type=\"application/ld+json\"]', scripts =>
-    scripts.map(s => s.innerText)
-  );
+  await page.goto(url, { waitUntil: 'networkidle0', timeout });
+  const html = await page.content();
   await browser.close();
-  return schemas.map(s => {
-    try {
-      return JSON.parse(s);
-    } catch {
-      return null;
-    }
-  }).filter(Boolean);
+  return fetchSchemaWithCheerio(html);
 }
 
 export async function fetchSocialTagsWithPuppeteer(url: string, timeout = 15000): Promise<{ og: Record<string, string | null>, twitter: Record<string, string | null> }> {

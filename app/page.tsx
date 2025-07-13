@@ -1,8 +1,6 @@
 'use client';
 
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect } from "react";
 import Footer from "@/components/Footer";
 
 export default function LandingPage() {

@@ -145,7 +145,7 @@ export default function CompareSeoResultBox({ uat, prod }: CompareSeoResultBoxPr
   }
 
   // Helper to render a field for both UAT and PROD
-  function FieldRow({ label, uatValue, prodValue, icon, badgeUat, badgeProd }: any) {
+  function FieldRow({ label, uatValue, prodValue, icon, badgeUat, badgeProd }: { label: string; uatValue: any; prodValue: any; icon: string; badgeUat: React.ReactNode; badgeProd: React.ReactNode }) {
     return (
       <div className="flex gap-4 mb-2">
         <div className="flex-1 flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
@@ -169,7 +169,7 @@ export default function CompareSeoResultBox({ uat, prod }: CompareSeoResultBoxPr
   }
 
   // Helper for badges (reuse logic from SeoResultBox)
-  function getBadge(value: any, label: string, type: 'text' | 'url' | 'tag' = 'text') {
+  function getBadge(value: string | undefined, label: string, type: 'text' | 'url' | 'tag' = 'text') {
     if (!value) {
       return <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Missing</span>;
     }
