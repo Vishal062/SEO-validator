@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
@@ -23,7 +24,10 @@ export default function Navigation() {
             <span className="text-xl font-bold text-white tracking-tight cursor-pointer pl-1">SEO<span className="text-purple-200">Tale</span></span>
           </Link>
         </div>
-        <div className="md:hidden">
+        
+        {/* Mobile menu button */}
+        <div className="md:hidden flex items-center gap-4">
+          <ThemeToggle />
           <button
             onClick={() => setOpen((v) => !v)}
             className="text-white focus:outline-none"
@@ -34,7 +38,9 @@ export default function Navigation() {
             </svg>
           </button>
         </div>
-        <div className={`flex-col md:flex-row md:flex gap-2 md:gap-6 items-center ${open ? 'flex' : 'hidden'} md:flex bg-gradient-to-r from-purple-600 to-blue-500 md:bg-none absolute md:static top-12 left-0 w-full md:w-auto z-50 md:z-auto`}>
+        
+        {/* Desktop navigation */}
+        <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link, idx) => (
             <Link
               key={link.href}
@@ -50,8 +56,30 @@ export default function Navigation() {
               {link.label}
             </Link>
           ))}
+          <ThemeToggle />
         </div>
       </div>
+      
+      {/* Mobile navigation menu */}
+      <div className={`flex-col md:flex-row md:flex gap-2 md:gap-6 items-center ${open ? 'flex' : 'hidden'} md:hidden bg-gradient-to-r from-purple-600 to-blue-500 md:bg-none absolute md:static top-12 left-0 w-full md:w-auto z-50 md:z-auto`}>
+        {navLinks.map((link, idx) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`text-white font-medium hover:text-purple-200 transition-colors px-4 py-2 block relative
+              ${clickedIdx === idx ? 'animate-navClick' : ''}
+              ${pathname === link.href ? 'border-b-2 border-white bg-white/10 text-purple-100 shadow-sm' : ''}`}
+            onClick={() => {
+              setClickedIdx(idx);
+              setTimeout(() => setClickedIdx(null), 350);
+              setOpen(false);
+            }}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+      
       {/* Animation keyframes for nav click */}
       <style jsx global>{`
         @keyframes navClick {

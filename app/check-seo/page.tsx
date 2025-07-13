@@ -77,25 +77,25 @@ export default function CheckSeoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
       <main className="relative z-10 flex flex-col md:flex-row min-h-screen p-6 gap-6">
         {/* Input Side */}
         <div className="md:w-1/2 space-y-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Enter URLs</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Enter URLs</h2>
           {urls.map((url, i) => (
             <input
               key={i}
               value={url}
               onChange={(e) => handleChange(i, e.target.value)}
               placeholder="https://example.com"
-              className="w-full p-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none bg-white/80 backdrop-blur-sm text-black placeholder-black"
+              className="w-full p-3 border-2 border-purple-200 dark:border-purple-600 rounded-lg focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-black dark:text-white placeholder-black dark:placeholder-gray-400"
             />
           ))}
           <div className="flex gap-3">
@@ -116,15 +116,16 @@ export default function CheckSeoPage() {
 
         {/* Result Side */}
         <div className="md:w-1/2 space-y-4 relative">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">SEO Results</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">SEO Results</h2>
           {loading ? (
             <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-              <span className="ml-3 text-gray-700">Analyzing SEO...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 dark:border-purple-400"></div>
+              <span className="ml-3 text-gray-700 dark:text-gray-300">Analyzing SEO...</span>
             </div>
           ) : results.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center text-gray-400 text-lg border border-dashed border-gray-300">
-              Your SEO results will appear here after you check a URL.
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center text-gray-400 dark:text-gray-500 text-lg border border-dashed border-gray-300 dark:border-gray-600 min-h-[400px] flex flex-col justify-center">
+              <p className="mb-4">Your SEO results will appear here after you check a URL.</p>
+              <p className="text-sm text-gray-300 dark:text-gray-400">Enter one or more URLs above and click "Check SEO" to analyze their search engine optimization metrics, including meta tags, headings, content structure, and performance indicators.</p>
             </div>
           ) : (
             results.length > 0 && (
@@ -136,10 +137,10 @@ export default function CheckSeoPage() {
                     <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20">
                       <button
                         onClick={scrollToTop}
-                        className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-gray-200"
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-gray-200 dark:border-gray-600"
                         title="Scroll to top"
                       >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                         </svg>
                       </button>
@@ -148,10 +149,10 @@ export default function CheckSeoPage() {
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20">
                       <button
                         onClick={scrollToBottom}
-                        className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-gray-200"
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-gray-200 dark:border-gray-600"
                         title="Scroll to bottom"
                       >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </button>
@@ -184,6 +185,15 @@ export default function CheckSeoPage() {
                 }
                 div::-webkit-scrollbar-thumb:hover {
                   background: #94a3b8;
+                }
+                .dark div::-webkit-scrollbar-track {
+                  background: #374151;
+                }
+                .dark div::-webkit-scrollbar-thumb {
+                  background: #6b7280;
+                }
+                .dark div::-webkit-scrollbar-thumb:hover {
+                  background: #9ca3af;
                 }
               `}</style>
               </div>
