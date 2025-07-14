@@ -2,8 +2,8 @@ import { useState } from 'react';
 import React from 'react';
 
 interface CompareSeoResultBoxProps {
-  uat: unknown;
-  prod: unknown;
+  uat: Record<string, unknown>;
+  prod: Record<string, unknown>;
 }
 
 const TABS = [
@@ -204,7 +204,7 @@ export default function CompareSeoResultBox({ uat, prod }: CompareSeoResultBoxPr
                           {uVal != null && uVal !== '' ? String(uVal) : <span className="text-red-600 font-semibold">Missing</span>}
                         </div>
                       </div>
-                      {getBadge(uVal as string, label, type as 'text' | 'url' | 'tag')}
+                      {getBadge(uVal != null && uVal !== '' ? String(uVal) : undefined, label, type as 'text' | 'url' | 'tag')}
                     </div>
                   );
                 }).filter(x => x !== null);
@@ -239,7 +239,7 @@ export default function CompareSeoResultBox({ uat, prod }: CompareSeoResultBoxPr
                           {pVal != null && pVal !== '' ? String(pVal) : <span className="text-red-600 font-semibold">Missing</span>}
                         </div>
                       </div>
-                      {getBadge(pVal as string, label, type as 'text' | 'url' | 'tag')}
+                      {getBadge(pVal != null && pVal !== '' ? String(pVal) : undefined, label, type as 'text' | 'url' | 'tag')}
                     </div>
                   );
                 }).filter(x => x !== null);

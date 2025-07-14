@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setResults } from '../seoSlice';
@@ -28,6 +28,10 @@ function storeBase(key: string, value: string) {
   }
 }
 
+// Type for SEO result
+type CompareResult = { uat: Record<string, unknown>; prod: Record<string, unknown> };
+type ClientUatResult = { [key: string]: string | undefined } | { error: string; url: string };
+
 export default function CompareSeoPage() {
   const [rows, setRows] = useState([
     { uatBase: '', prodBase: '', path: '' }
@@ -44,6 +48,28 @@ export default function CompareSeoPage() {
   const uatRefs = useRef<(HTMLInputElement | null)[]>([]);
   const prodRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [lastPath, setLastPath] = useState<string>("");
+  const [clientUatResults, setClientUatResults] = useState<Record<number, ClientUatResult>>({});
+  const [clientUatLoading, setClientUatLoading] = useState<Record<number, boolean>>({});
+
+  // Helper to fetch UAT from browser if needed
+  const fetchUatClientSide = useCallback(async (uatUrl: string, idx: number) => {
+    setClientUatLoading(prev => ({ ...prev, [idx]: true }));
+    try {
+      const res = await fetch(uatUrl);
+      const html = await res.text();
+      // Parse HTML in browser (minimal, just for demo)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const title = doc.querySelector('title')?.textContent || 'Missing';
+      const description = doc.querySelector('meta[name="description"]')?.getAttribute('content') || 'Missing';
+      // You can add more parsing as needed
+      setClientUatResults(prev => ({ ...prev, [idx]: { title, description, url: uatUrl } }));
+    } catch {
+      setClientUatResults(prev => ({ ...prev, [idx]: { error: 'Failed to fetch UAT from browser', url: uatUrl } }));
+    } finally {
+      setClientUatLoading(prev => ({ ...prev, [idx]: false }));
+    }
+  }, []);
 
   useEffect(() => {
     setUatSuggestions(getStoredBases(UAT_KEY));
@@ -284,13 +310,42 @@ export default function CompareSeoPage() {
               </div>
             ) : (
               results.map((result, i) => {
-                const { uat, prod } = result as { uat: unknown; prod: unknown };
+                const { uat, prod } = result as CompareResult;
+                // If specialClientFetch is set, try to fetch UAT from browser
+                if (uat && uat.specialClientFetch) {
+                  if (!clientUatResults[i] && !clientUatLoading[i] && typeof uat.url === 'string') {
+                    // Try to fetch UAT from browser
+                    fetchUatClientSide(uat.url, i);
+                  }
+                  const clientFetched = clientUatResults[i] && !clientUatLoading[i] && typeof clientUatResults[i] === 'object' && clientUatResults[i] !== null && !('error' in clientUatResults[i]);
+                  return (
+                    <div key={i} className="w-full">
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 w-full">
+                          {!clientFetched && (
+                            <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded text-center font-semibold">
+                              Your UAT server is restricted so it will take time. Trying to fetch from your browser...
+                            </div>
+                          )}
+                          <CompareSeoResultBox
+                            uat={clientUatLoading[i]
+                              ? { loading: true }
+                              : (clientUatResults[i] && typeof clientUatResults[i] === 'object' && clientUatResults[i] !== null && !('error' in clientUatResults[i])
+                                  ? (clientUatResults[i] as Record<string, unknown>)
+                                  : (uat as Record<string, unknown>))}
+                            prod={prod as Record<string, unknown>}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
                 return (
                   <div key={i} className="w-full">
                     <div className="flex flex-col md:flex-row gap-4">
                       {/* On mobile, stack UAT and PROD vertically; on desktop, side by side */}
                       <div className="flex-1 w-full">
-                        <CompareSeoResultBox uat={uat} prod={prod} />
+                        <CompareSeoResultBox uat={uat as Record<string, unknown>} prod={prod as Record<string, unknown>} />
                       </div>
                     </div>
                   </div>

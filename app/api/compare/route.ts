@@ -75,8 +75,34 @@ export async function POST(req: NextRequest) {
           };
         }
       };
-      const uat = await fetchSeo(pair.uatUrl);
-      const prod = await fetchSeo(pair.prodUrl);
+      // Fetch UAT and PROD in parallel for speed
+      const [uat, prod] = await Promise.all([
+        (async () => {
+          try {
+            return await fetchSeo(pair.uatUrl);
+          } catch (err: unknown) {
+            return {
+              url: pair.uatUrl,
+              error: (err as Error).message || 'Failed to fetch',
+            };
+          }
+        })(),
+        (async () => {
+          try {
+            return await fetchSeo(pair.prodUrl);
+          } catch (err: unknown) {
+            return {
+              url: pair.prodUrl,
+              error: (err as Error).message || 'Failed to fetch',
+            };
+          }
+        })(),
+      ]);
+
+      // If UAT failed but PROD succeeded, add a special error code for frontend
+      if (uat.error && !prod.error) {
+        (uat as { [key: string]: unknown }).specialClientFetch = true;
+      }
       return { uat, prod };
     })
   );
