@@ -170,7 +170,7 @@ export default function CheckSeoPage() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="absolute left-1/2 -translate-x-1/2 top-12 z-10 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs rounded px-2 py-1 pointer-events-none transition-opacity whitespace-nowrap">Add more URL'S here</span>
+                <span className="absolute left-1/2 -translate-x-1/2 top-12 z-10 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs rounded px-2 py-1 pointer-events-none transition-opacity whitespace-nowrap">Add more URL&#39;S here</span>
               </button>
             </div>
             {error && (

@@ -28,7 +28,7 @@ export async function fetchSchemaWithCheerio(html: string): Promise<unknown[]> {
     try {
       const json = JSON.parse($(el).html() || '{}');
       schema.push(filterSchema(json));
-    } catch (_e: unknown) {
+    } catch {
       // skip
     }
   });

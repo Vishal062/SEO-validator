@@ -2,7 +2,7 @@ import { useState } from 'react';
 import React from 'react';
 
 type Props = {
-  data: any;
+  data: unknown;
 };
 
 const TABS = [
@@ -15,24 +15,8 @@ const TABS = [
   // 'Advanced',
 ];
 
-function getBadge(value: string | undefined, label: string, type: 'text' | 'url' | 'tag' = 'text') {
-  if (!value) {
-    return <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Missing</span>;
-  }
-  if (type === 'text') {
-    return <span className="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">✓ {value.length} characters</span>;
-  }
-  if (type === 'url') {
-    return <span className="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">Indexable</span>;
-  }
-  if (type === 'tag') {
-    return <span className="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">{value}</span>;
-  }
-  return null;
-}
-
 // Modular OverviewFields component
-function OverviewFields({ data }: { data: any }) {
+function OverviewFields({ data }: { data: Record<string, unknown> }) {
   function getBadge(value: string | undefined, label: string, type: 'text' | 'url' | 'tag' = 'text') {
     if (!value) {
       return <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Missing</span>;
@@ -56,10 +40,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">📝</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-blue-900 flex items-center gap-1">Title <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.title || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.title != null && data.title !== '' ? String(data.title) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.title, 'Title', 'text')}
+            {getBadge(data.title as string | undefined, 'Title', 'text')}
           </div>
         </div>
         {/* Description */}
@@ -67,10 +51,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">💬</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-green-900 flex items-center gap-1">Description <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.description || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.description != null && data.description !== '' ? String(data.description) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.description, 'Description', 'text')}
+            {getBadge(data.description as string | undefined, 'Description', 'text')}
           </div>
         </div>
         {/* URL */}
@@ -78,10 +62,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">🔗</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-purple-900 flex items-center gap-1">URL <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.url || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.url != null && data.url !== '' ? String(data.url) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.url, 'URL', 'url')}
+            {getBadge(data.url as string | undefined, 'URL', 'url')}
           </div>
         </div>
         {/* Canonical */}
@@ -89,10 +73,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">📍</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-orange-900 flex items-center gap-1">Canonical <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.canonical || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.canonical != null && data.canonical !== '' ? String(data.canonical) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.canonical, 'Canonical', 'url')}
+            {getBadge(data.canonical as string | undefined, 'Canonical', 'url')}
           </div>
         </div>
         {/* Robots Tag */}
@@ -100,10 +84,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">🏷️</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-pink-900 flex items-center gap-1">Robots Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.robotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.robotsTag != null && data.robotsTag !== '' ? String(data.robotsTag) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.robotsTag, 'Robots Tag', data.robotsTag ? 'tag' : 'text')}
+            {getBadge(data.robotsTag as string | undefined, 'Robots Tag', data.robotsTag ? 'tag' : 'text')}
           </div>
         </div>
         {/* X-Robots-Tag */}
@@ -111,10 +95,10 @@ function OverviewFields({ data }: { data: any }) {
           <span className="text-xl flex-shrink-0">🏷️</span>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-pink-900 flex items-center gap-1">X-Robots-Tag <span className="text-gray-400 text-xs cursor-help">?</span></div>
-            <div className="text-gray-900 text-base break-words">{data.xRobotsTag || <span className="text-red-600 font-semibold">Missing</span>}</div>
+            <div className="text-gray-900 text-base break-words">{data.xRobotsTag != null && data.xRobotsTag !== '' ? String(data.xRobotsTag) : <span className="text-red-600 font-semibold">Missing</span>}</div>
           </div>
           <div className="flex-shrink-0">
-            {getBadge(data.xRobotsTag, 'X-Robots-Tag', data.xRobotsTag ? 'tag' : 'text')}
+            {getBadge(data.xRobotsTag as string | undefined, 'X-Robots-Tag', data.xRobotsTag ? 'tag' : 'text')}
           </div>
         </div>
       </div>
@@ -150,8 +134,8 @@ function HeadingsList({ headings }: { headings: { level: string, text: string }[
             <span>📋</span> {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        {headings && headings.length > 0 ? headings.map((h, i) => (
-          <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+        {headings && headings.length > 0 ? headings.map((h) => (
+          <div key={h.level} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <span className={`px-2 py-1 rounded font-mono text-xs font-bold flex-shrink-0 ${badgeColor(h.level)}`}>{`<${h.level.toUpperCase()}>`}</span>
             <span className="text-base text-gray-900 break-words min-w-0 flex-1">{h.text}</span>
           </div>
@@ -178,8 +162,8 @@ function LinksList({ links }: { links: { href?: string, anchor: string }[] }) {
             <span>📋</span> {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        {links && links.length > 0 ? links.map((l, i) => (
-          <div key={i} className="space-y-1">
+        {links && links.length > 0 ? links.map((l) => (
+          <div key={l.href || l.anchor} className="space-y-1">
             <div className={l.href ? "font-bold text-black break-all whitespace-pre-line" : "font-bold text-red-600 break-all whitespace-pre-line"}>
               {l.href || 'Undefined (No href attribute)'}
             </div>
@@ -194,26 +178,26 @@ function LinksList({ links }: { links: { href?: string, anchor: string }[] }) {
 }
 
 // Modular SchemaTable component
-function SchemaTable({ schema }: { schema: any[] }) {
+function SchemaTable({ schema }: { schema: unknown[] }) {
   // Recursively render schema as table rows
-  function renderRows(obj: any, depth = 0): React.ReactNode {
+  function renderRows(obj: unknown, depth = 0): React.ReactNode {
     if (Array.isArray(obj)) {
-      return obj.map((item, idx) => renderRows(item, depth + 1));
+      return obj.map((item) => renderRows(item, depth + 1)).filter(Boolean);
     }
     if (typeof obj === 'object' && obj !== null) {
-      return Object.entries(obj).map(([key, value], idx): React.ReactNode => (
-        <React.Fragment key={key + idx}>
+      return Object.entries(obj as Record<string, unknown>).map(([key, value]) => (
+        <React.Fragment key={key}>
           <tr>
             <td className={`py-1 pr-4 align-top ${key.startsWith('@') ? 'text-purple-600 font-bold' : 'text-gray-700 font-semibold'}`} style={{ paddingLeft: `${depth * 24}px` }}>
               {key}
             </td>
             <td className="py-1 align-top text-gray-900">
-              {typeof value === 'object' && value !== null ? '' + (Array.isArray(value) ? '' : '') : String(value)}
+              {typeof value === 'object' && value !== null ? null : String(value)}
             </td>
           </tr>
           {typeof value === 'object' && value !== null ? renderRows(value, depth + 1) : null}
         </React.Fragment>
-      ));
+      )).filter(Boolean);
     }
     return null;
   }
@@ -242,13 +226,13 @@ function SchemaTable({ schema }: { schema: any[] }) {
           </button>
         </div>
         <div className="text-gray-500 text-sm mb-4">
-          Schema is a form of microdata which helps add context for search engines regarding what a web page is about. You don't <span className="font-semibold">need</span> to have it, though it has <span className="font-semibold">many use cases</span>. It's usually fine if this tab is empty.
+          Schema is a form of microdata which helps add context for search engines regarding what a web page is about. You don&#39;t <span className="font-semibold">need</span> to have it, though it has <span className="font-semibold">many use cases</span>. It&#39;s usually fine if this tab is empty.
         </div>
         {schema && schema.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-separate border-spacing-y-1">
               <tbody>
-                {schema.map((obj, i) => renderRows(obj, 0))}
+                {schema.map((obj) => renderRows(obj, 0))}
               </tbody>
             </table>
           </div>
@@ -261,9 +245,9 @@ function SchemaTable({ schema }: { schema: any[] }) {
 }
 
 // Modular SocialFields component
-function SocialFields({ data }: { data: any }) {
-  const og = data.og || {};
-  const twitter = data.twitter || {};
+function SocialFields({ data }: { data: Record<string, unknown> }) {
+  const og = (data.og || {}) as Record<string, unknown>;
+  const twitter = (data.twitter || {}) as Record<string, unknown>;
   // Only show these keys, in this order
   const ogKeys = [
     'og:title',
@@ -292,7 +276,7 @@ function SocialFields({ data }: { data: any }) {
               <div key={key}>
                 <div className="text-purple-600 font-semibold text-sm">{key}</div>
                 <div className={og[key] ? 'text-gray-900 break-words' : 'text-red-600 font-semibold'}>
-                  {og[key] || 'Missing'}
+                  {og[key] != null && og[key] !== '' ? String(og[key]) : 'Missing'}
                 </div>
               </div>
             ))}
@@ -306,7 +290,7 @@ function SocialFields({ data }: { data: any }) {
               <div key={key}>
                 <div className="text-blue-600 font-semibold text-sm">{key}</div>
                 <div className={twitter[key] ? 'text-gray-900 break-words' : 'text-red-600 font-semibold'}>
-                  {twitter[key] || 'Missing'}
+                  {twitter[key] != null && twitter[key] !== '' ? String(twitter[key]) : 'Missing'}
                 </div>
               </div>
             ))}
@@ -319,14 +303,15 @@ function SocialFields({ data }: { data: any }) {
 
 export default function SeoResultBox({ data }: Props) {
   const [tab, setTab] = useState('Overview');
+  const safeData = (data || {}) as Record<string, unknown>;
 
-  if (data.error) {
+  if ((safeData as { error?: string }).error) {
     return (
       <div className="p-6 bg-red-50 border border-red-300 rounded-2xl shadow-lg max-w-2xl mx-auto my-4 flex items-start gap-4">
         <div className="text-red-500 text-2xl mt-1">❌</div>
         <div>
-          <h3 className="text-lg font-bold text-red-700 break-all">{data.url}</h3>
-          <p className="mt-1 text-base text-red-600 font-semibold">Error: {data.error}</p>
+          <h3 className="text-lg font-bold text-red-700 break-all">{(safeData as { url?: string }).url}</h3>
+          <p className="mt-1 text-base text-red-600 font-semibold">Error: {(safeData as { error?: string }).error}</p>
         </div>
       </div>
     );
@@ -348,11 +333,11 @@ export default function SeoResultBox({ data }: Props) {
       </div>
 
       {/* Tab Content */}
-      {tab === 'Overview' && <OverviewFields data={data} />}
-      {tab === 'Headings' && <HeadingsList headings={data.headings || []} />}
-      {tab === 'Links' && <LinksList links={data.links || []} />}
-      {tab === 'Schema' && <SchemaTable schema={data.schema || []} />}
-      {tab === 'Social' && <SocialFields data={data} />}
+      {tab === 'Overview' && <OverviewFields data={safeData} />}
+      {tab === 'Headings' && <HeadingsList headings={Array.isArray(safeData.headings) ? safeData.headings as { level: string, text: string }[] : []} />}
+      {tab === 'Links' && <LinksList links={Array.isArray(safeData.links) ? safeData.links as { href?: string, anchor: string }[] : []} />}
+      {tab === 'Schema' && <SchemaTable schema={Array.isArray(safeData.schema) ? safeData.schema : []} />}
+      {tab === 'Social' && <SocialFields data={safeData} />}
       {tab !== 'Overview' && tab !== 'Headings' && tab !== 'Links' && tab !== 'Schema' && tab !== 'Social' && (
         <div className="text-gray-400 italic">No data for this tab yet.</div>
       )}

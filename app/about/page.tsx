@@ -9,7 +9,7 @@ export default function AboutPage() {
         <div className="text-gray-700 text-base md:text-lg leading-relaxed space-y-6">
           <section>
             <p className="text-gray-800 font-semibold text-lg mb-2">It all started with a sprint demo.</p>
-            <p>The QA lead pointed out something odd — the meta description on the UAT build was showing &quot;Lorem Ipsum.&quot; Everyone laughed. But when we pushed to production and saw that the title tag still said &quot;Test Page&quot;, it wasn&apos;t funny anymore.</p>
+            <p>The QA lead pointed out something odd — the meta description on the UAT build was showing &quot;Lorem Ipsum.&quot; Everyone laughed. But when we pushed to production and saw that the title tag still said &quot;Test Page&quot;, it wasn&#39;t funny anymore.</p>
           </section>
           <section className="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-400">
             <p className="mb-2">We were a team of developers and testers working on fast-moving websites with weekly (sometimes daily) releases. Clients expected perfect pages — optimized, clean, and SEO-ready. But in the chaos of deployments, the SEO tags were often overlooked. Not because we didn’t care, but because there was no simple way to validate them at scale.</p>
@@ -17,7 +17,7 @@ export default function AboutPage() {
             <ul className="list-none space-y-1 mt-2">
               <li className="flex items-center gap-2"><span className="text-yellow-500">⚠️</span> Did the canonical tag point to staging instead of production?</li>
               <li className="flex items-center gap-2"><span className="text-blue-500">🔖</span> Did we forget the OG tags on that one landing page?</li>
-              <li className="flex items-center gap-2"><span className="text-green-500">🔄</span> Is the UAT SEO matching what's in live?</li>
+              <li className="flex items-center gap-2"><span className="text-green-500">🔄</span> Is the UAT SEO matching what&#39;s in live?</li>
               <li className="flex items-center gap-2"><span className="text-pink-500">📝</span> Did the new build override marketing’s meta updates?</li>
             </ul>
           </section>
@@ -42,16 +42,16 @@ export default function AboutPage() {
               <span className="text-3xl">🚀</span> Powering Fast-Moving Teams & Startups
             </p>
             <p className="text-gray-800 leading-relaxed">
-              Today, we're helping <span className="font-semibold text-green-600">10+ startups</span> ship SEO-optimized pages with confidence —
+              Today, we&#39;re helping <span className="font-semibold text-green-600">10+ startups</span> ship SEO-optimized pages with confidence —
               serving over <span className="font-semibold text-green-600">1,000 users</span> and growing fast.
             </p>
             <p className="text-gray-800 leading-relaxed">
-              If you’ve ever heard that on deployment day, this tool was made for you.
+              If you&#39;ve ever heard that on deployment day, this tool was made for you.
               We’re scaling quickly — because the market loves SEO as much as we do.
             </p>
           </section>
           <section>
-            <p className="font-bold text-purple-700 mt-4">We believe SEO should be part of the build process, not an afterthought.<br />We’re here to make that easy — one page at a time.</p>
+            <p className="font-bold text-purple-700 mt-4">We believe SEO should be part of the build process, not an afterthought.<br />We&#39;re here to make that easy — one page at a time.</p>
           </section>
         </div>
       </div>

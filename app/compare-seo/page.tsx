@@ -6,14 +6,8 @@ import { setResults } from '../seoSlice';
 import type { RootState } from '../store';
 import CompareSeoResultBox from '@/components/CompareSeoResultBox';
 
-function highlightBase(url: string, base: string) {
-  if (!url.startsWith(base)) return <span>{url}</span>;
-  return <span><span className="bg-yellow-200 px-1 rounded font-bold">{base}</span>{url.slice(base.length)}</span>;
-}
-
 const UAT_KEY = 'seo-compare-uat-bases';
 const PROD_KEY = 'seo-compare-prod-bases';
-const PATH_KEY = 'seo-compare-shared-paths';
 const LAST_PATH_KEY = 'seo-compare-last-shared-path';
 
 function getStoredBases(key: string) {
@@ -49,9 +43,6 @@ export default function CompareSeoPage() {
   const [showProdDropdown, setShowProdDropdown] = useState<number | null>(null);
   const uatRefs = useRef<(HTMLInputElement | null)[]>([]);
   const prodRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [pathSuggestions, setPathSuggestions] = useState<string[]>([]);
-  const [showPathDropdown, setShowPathDropdown] = useState<number | null>(null);
-  const pathRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [lastPath, setLastPath] = useState<string>("");
 
   useEffect(() => {
@@ -88,12 +79,6 @@ export default function CompareSeoPage() {
   };
   const handleUatBlur = () => setTimeout(() => setShowUatDropdown(null), 150);
   const handleProdBlur = () => setTimeout(() => setShowProdDropdown(null), 150);
-
-  const handlePathFocus = (i: number) => {
-    setPathSuggestions(getStoredBases(PATH_KEY));
-    setShowPathDropdown(i);
-  };
-  const handlePathBlur = () => setTimeout(() => setShowPathDropdown(null), 150);
 
   // Simple URL validation function
   function isValidUrl(url: string) {
@@ -135,8 +120,12 @@ export default function CompareSeoPage() {
       setUatSuggestions(getStoredBases(UAT_KEY));
       setProdSuggestions(getStoredBases(PROD_KEY));
       setLastPath(localStorage.getItem(LAST_PATH_KEY) || "");
-    } catch (err: any) {
-      setError('Failed to compare SEO.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Failed to compare SEO.');
+      } else {
+        setError('Failed to compare SEO.');
+      }
     } finally {
       setLoading(false);
     }
@@ -170,7 +159,7 @@ export default function CompareSeoPage() {
                     />
                     {showUatDropdown === i && uatSuggestions.length > 0 && (
                       <div className="absolute left-0 right-0 z-30 bg-white border border-gray-200 rounded shadow mt-1 w-full max-h-40 overflow-y-auto">
-                        {uatSuggestions.map((s, idx) => (
+                        {uatSuggestions.map((s) => (
                           <div
                             key={s}
                             className="px-3 py-1 text-xs text-gray-700 hover:bg-purple-100 cursor-pointer"
@@ -200,7 +189,7 @@ export default function CompareSeoPage() {
                     />
                     {showProdDropdown === i && prodSuggestions.length > 0 && (
                       <div className="absolute left-0 right-0 z-30 bg-white border border-gray-200 rounded shadow mt-1 w-full max-h-40 overflow-y-auto">
-                        {prodSuggestions.map((s, idx) => (
+                        {prodSuggestions.map((s) => (
                           <div
                             key={s}
                             className="px-3 py-1 text-xs text-gray-700 hover:bg-blue-100 cursor-pointer"
@@ -222,17 +211,17 @@ export default function CompareSeoPage() {
                     <input
                       value={row.path}
                       onChange={e => handleChange(i, 'path', e.target.value)}
-                      onFocus={() => setShowPathDropdown(i)}
-                      onBlur={() => setTimeout(() => setShowPathDropdown(null), 150)}
+                      onFocus={() => setShowUatDropdown(i)}
+                      onBlur={() => setTimeout(() => setShowUatDropdown(null), 150)}
                       placeholder="Shared Path"
                       className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-gray-500 focus:outline-none bg-white/80 text-black"
                     />
                     {/* Suggestion for Shared Path: only show when input is focused and user has started typing */}
-                    {showPathDropdown === i && lastPath && lastPath.trim() && lastPath !== row.path && (
+                    {showUatDropdown === i && lastPath && lastPath.trim() && lastPath !== row.path && (
                       <div className="absolute left-0 right-0 z-30 bg-white border border-gray-200 rounded shadow mt-1 w-full max-h-40 overflow-y-auto">
                         <div
                           className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer"
-                          onMouseDown={() => { handleChange(i, 'path', lastPath); setShowPathDropdown(null); }}
+                          onMouseDown={() => { handleChange(i, 'path', lastPath); setShowUatDropdown(null); }}
                         >
                           Suggest: <span className="text-gray-700">{lastPath}</span>
                         </div>
@@ -294,16 +283,19 @@ export default function CompareSeoPage() {
                 Your SEO comparison results will show up here once you submit the URLs.
               </div>
             ) : (
-              results.map((result, i) => (
-                <div key={i} className="w-full">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    {/* On mobile, stack UAT and PROD vertically; on desktop, side by side */}
-                    <div className="flex-1 w-full">
-                      <CompareSeoResultBox uat={result.uat} prod={result.prod} />
+              results.map((result, i) => {
+                const { uat, prod } = result as { uat: unknown; prod: unknown };
+                return (
+                  <div key={i} className="w-full">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {/* On mobile, stack UAT and PROD vertically; on desktop, side by side */}
+                      <div className="flex-1 w-full">
+                        <CompareSeoResultBox uat={uat} prod={prod} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </main>

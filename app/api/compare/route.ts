@@ -35,22 +35,22 @@ export async function POST(req: NextRequest) {
           });
 
           // Extract Open Graph and Twitter meta tags using Puppeteer
-          let og = {};
-          let twitter = {};
+          let og: unknown = {};
+          let twitter: unknown = {};
           try {
             const social = await fetchSocialTagsWithPuppeteer(url);
             og = social.og;
             twitter = social.twitter;
-          } catch (_e: unknown) {
+          } catch {
             // fallback: leave og and twitter empty
           }
 
           // Use Puppeteer helper for schema extraction and filter keys
-          let schema: any[] = [];
+          let schema: unknown[] = [];
           try {
             const rawSchema = await fetchSchemaWithPuppeteer(url);
             schema = rawSchema.map(filterSchema);
-          } catch (_e: unknown) {
+          } catch {
             // fallback: leave schema empty
           }
 
@@ -68,10 +68,10 @@ export async function POST(req: NextRequest) {
             og,
             twitter,
           };
-        } catch (_err: unknown) {
+        } catch (err: unknown) {
           return {
             url,
-            error: (_err as Error).message || 'Failed to fetch',
+            error: (err as Error).message || 'Failed to fetch',
           };
         }
       };
