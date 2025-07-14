@@ -55,7 +55,9 @@ export default function CompareSeoPage() {
   const fetchUatClientSide = useCallback(async (uatUrl: string, idx: number) => {
     setClientUatLoading(prev => ({ ...prev, [idx]: true }));
     try {
-      const res = await fetch(uatUrl);
+      const corsProxy = 'https://corsproxy.io/?';
+      const proxiedUrl = corsProxy + encodeURIComponent(uatUrl);
+      const res = await fetch(proxiedUrl);
       const html = await res.text();
       // Parse HTML in browser (minimal, just for demo)
       const parser = new DOMParser();
