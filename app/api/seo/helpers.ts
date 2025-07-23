@@ -77,6 +77,34 @@ export async function fetchSocialTagsWithPuppeteer(url: string, timeout = 15000)
   return { og, twitter };
 }
 
+// Enhanced datalayer capture function
+export async function captureDataLayerWithPuppeteer(url: string, timeout = 30000): Promise<any[]> {
+  const browser = await puppeteer.launch({ 
+    headless: true, 
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--disable-gpu'
+    ] 
+  });
+  const page = await browser.newPage();
+
+  // Only capture datalayer after page load
+  await page.goto(url, { waitUntil: 'networkidle2', timeout: Math.min(timeout, 20000) });
+  await new Promise(resolve => setTimeout(resolve, 2000)); // allow late events
+
+  const dataLayerEvents = await page.evaluate(() => {
+    return window.dataLayer ? JSON.parse(JSON.stringify(window.dataLayer)) : [];
+  });
+
+  await browser.close();
+  return dataLayerEvents;
+}
+
 export function getOpenGraphTags(html: string): Record<string, string | null> {
   const $ = cheerio.load(html);
   const og: Record<string, string | null> = {};

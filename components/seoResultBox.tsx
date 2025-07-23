@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 
 type Props = {
@@ -12,6 +12,7 @@ const TABS = [
   // 'Images',
   'Schema',
   'Social',
+  'Analytics', // <-- add Analytics tab
   // 'Advanced',
 ];
 
@@ -134,8 +135,8 @@ function HeadingsList({ headings }: { headings: { level: string, text: string }[
             <span>📋</span> {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        {headings && headings.length > 0 ? headings.map((h) => (
-          <div key={h.level} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+        {headings && headings.length > 0 ? headings.map((h, idx) => (
+          <div key={h.level + '-' + h.text + '-' + idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <span className={`px-2 py-1 rounded font-mono text-xs font-bold flex-shrink-0 ${badgeColor(h.level)}`}>{`<${h.level.toUpperCase()}>`}</span>
             <span className="text-base text-gray-900 break-words min-w-0 flex-1">{h.text}</span>
           </div>
@@ -162,8 +163,8 @@ function LinksList({ links }: { links: { href?: string, anchor: string }[] }) {
             <span>📋</span> {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        {links && links.length > 0 ? links.map((l) => (
-          <div key={l.href || l.anchor} className="space-y-1">
+        {links && links.length > 0 ? links.map((l, idx) => (
+          <div key={(l.href || '') + '-' + l.anchor + '-' + idx} className="space-y-1">
             <div className={l.href ? "font-bold text-black break-all whitespace-pre-line" : "font-bold text-red-600 break-all whitespace-pre-line"}>
               {l.href || 'Undefined (No href attribute)'}
             </div>
@@ -301,7 +302,27 @@ function SocialFields({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-export default function SeoResultBox({ data }: Props) {
+// Add Analytics tab content
+function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: any[]; dataLayerAsync?: any[] }) {
+  const [currentDataLayer, setCurrentDataLayer] = useState<any[]>(dataLayer || []);
+  useEffect(() => {
+    if (dataLayerAsync && Array.isArray(dataLayerAsync) && dataLayerAsync.length > 0) {
+      setCurrentDataLayer(dataLayerAsync);
+    }
+  }, [dataLayerAsync]);
+  if (!currentDataLayer || !Array.isArray(currentDataLayer) || currentDataLayer.length === 0) {
+    return <div className="text-gray-500">No dataLayer values found.</div>;
+  }
+  return (
+    <div className="w-full overflow-x-auto">
+      <pre className="bg-gray-50 rounded-lg p-4 text-xs text-black whitespace-pre-wrap max-h-96 overflow-y-auto">
+        {JSON.stringify(currentDataLayer, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
+export default function SeoResultBox({ data, dataLayerAsync }: Props & { dataLayerAsync?: any[] }) {
   const [tab, setTab] = useState('Overview');
   const safeData = (data || {}) as Record<string, unknown>;
 
@@ -338,7 +359,8 @@ export default function SeoResultBox({ data }: Props) {
       {tab === 'Links' && <LinksList links={Array.isArray(safeData.links) ? safeData.links as { href?: string, anchor: string }[] : []} />}
       {tab === 'Schema' && <SchemaTable schema={Array.isArray(safeData.schema) ? safeData.schema : []} />}
       {tab === 'Social' && <SocialFields data={safeData} />}
-      {tab !== 'Overview' && tab !== 'Headings' && tab !== 'Links' && tab !== 'Schema' && tab !== 'Social' && (
+      {tab === 'Analytics' && <AnalyticsTab dataLayer={safeData.dataLayer as any[]} dataLayerAsync={dataLayerAsync} />}
+      {tab !== 'Overview' && tab !== 'Headings' && tab !== 'Links' && tab !== 'Schema' && tab !== 'Social' && tab !== 'Analytics' && (
         <div className="text-gray-400 italic">No data for this tab yet.</div>
       )}
     </div>

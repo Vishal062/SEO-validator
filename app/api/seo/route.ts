@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { fetchSchemaWithPuppeteer, filterSchema, fetchSocialTagsWithPuppeteer } from './helpers';
+import { fetchSchemaWithPuppeteer, filterSchema, fetchSocialTagsWithPuppeteer, captureDataLayerWithPuppeteer } from './helpers';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -53,6 +53,15 @@ export async function POST(req: NextRequest) {
           // fallback: leave schema empty
         }
 
+        // Capture datalayer events using enhanced function
+        let dataLayer: any[] = [];
+        try {
+          dataLayer = await captureDataLayerWithPuppeteer(url, 30000);
+        } catch (error) {
+          console.error('Failed to capture datalayer for', url, error);
+          // fallback: leave dataLayer empty
+        }
+
         return {
           url,
           title: $('title').text() || 'Missing',
@@ -66,6 +75,7 @@ export async function POST(req: NextRequest) {
           schema,
           og,
           twitter,
+          dataLayer,
         };
       } catch (err: unknown) {
         return {
