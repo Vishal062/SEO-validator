@@ -29,13 +29,17 @@ export default function RootLayout({
         <link rel="icon" href="/globe.svg" type="image/svg+xml" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col relative`}
       >
-        <Navigation />
+        <div className="relative z-50">
+          <Navigation />
+        </div>
         {/* Use ReduxProvider client component to provide Redux store */}
-        <ReduxProvider>
-          {children}
-        </ReduxProvider>
+        <div className="relative z-0 flex-1">
+          <ReduxProvider>
+            {children}
+          </ReduxProvider>
+        </div>
       </body>
     </html>
   );

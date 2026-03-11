@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Route	Tool Name	What It Does
+/check-seo	Check SEO	Audit 1+ URLs — title, desc, headings, links, schema, social, GTM dataLayer
+/compare-seo	Compare SEO	UAT vs PROD side-by-side, multi-row, localStorage history for base URLs
+/intelliseo	IntelliSEO	Most advanced — SEO audit + auto-snapshots + time-based deep diff + Google Sheets import
+/snapshot-seo	SnapshotSEO Pro	Browse and compare saved snapshots for any URL, link scope or website scope
+/seo-crawler-pro	SEO Crawler Pro	Crawls an entire domain, finds all pages, real-time progress + pages/sec metrics
