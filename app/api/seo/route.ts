@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { fetchSchemaWithPuppeteer, filterSchema, fetchSocialTagsWithPuppeteer } from './helpers';
+import { filterSchema, fetchAllWithPuppeteer, getOpenGraphTags, getTwitterTags } from './helpers';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
   const results = await Promise.all(
     urls.map(async (url: string) => {
       try {
-        const { data } = await axios.get(url);
-        const $ = cheerio.load(data);
+        const { data: html, headers: responseHeaders } = await axios.get(url);
+        const $ = cheerio.load(html);
 
         const headings: { level: string, text: string }[] = [];
         ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(level => {
@@ -33,39 +33,48 @@ export async function POST(req: NextRequest) {
           links.push({ href, anchor });
         });
 
-        // Extract Open Graph and Twitter meta tags using Puppeteer
-        let og: unknown = {};
-        let twitter: unknown = {};
-        try {
-          const social = await fetchSocialTagsWithPuppeteer(url);
-          og = social.og;
-          twitter = social.twitter;
-        } catch {
-          // fallback: leave og and twitter empty
-        }
+        // Robots tags from static HTML / HTTP headers
+        const robotsTag = $('meta[name="robots"]').attr('content') || '';
+        const xRobotsTag = (responseHeaders['x-robots-tag'] as string) || '';
 
-        // Use Puppeteer helper for schema extraction and filter keys
+        // Cheerio-based OG/Twitter as guaranteed fallback (runs on already-fetched HTML)
+        const cheerioOg = getOpenGraphTags(html);
+        const cheerioTwitter = getTwitterTags(html);
+
+        // Defaults from Cheerio
+        let og: Record<string, string | null> = { ...cheerioOg };
+        let twitter: Record<string, string | null> = { ...cheerioTwitter };
         let schema: unknown[] = [];
+        let dataLayer: any[] = [];
+
+        // ONE Puppeteer visit per URL — extracts OG + Twitter + Schema + DataLayer together.
+        // Puppeteer values override Cheerio values where present.
         try {
-          const rawSchema = await fetchSchemaWithPuppeteer(url);
-          schema = rawSchema.map(filterSchema);
-        } catch {
-          // fallback: leave schema empty
+          const puppeteerData = await fetchAllWithPuppeteer(url, 30000);
+          og = { ...cheerioOg, ...puppeteerData.og };
+          twitter = { ...cheerioTwitter, ...puppeteerData.twitter };
+          schema = puppeteerData.schema.map(filterSchema).filter(v => v !== undefined) as unknown[];
+          dataLayer = puppeteerData.dataLayer;
+        } catch (puppeteerErr) {
+          console.warn('Puppeteer extraction failed, using Cheerio fallbacks for', url, puppeteerErr);
         }
 
         return {
           url,
-          title: $('title').text() || 'Missing',
-          description: $('meta[name="description"]').attr('content') || 'Missing',
-          h1: $('h1').first().text() || 'Missing',
-          canonical: $('link[rel="canonical"]').attr('href') || 'Missing',
-          ogTitle: $('meta[property="og:title"]').attr('content') || 'Missing',
-          ogDesc: $('meta[property="og:description"]').attr('content') || 'Missing',
+          title: $('title').text() || '',
+          description: $('meta[name="description"]').attr('content') || '',
+          h1: $('h1').first().text() || '',
+          canonical: $('link[rel="canonical"]').attr('href') || '',
+          robotsTag,
+          xRobotsTag,
+          ogTitle: og['og:title'] || '',
+          ogDesc: og['og:description'] || '',
           headings,
           links,
           schema,
           og,
           twitter,
+          dataLayer,
         };
       } catch (err: unknown) {
         return {
