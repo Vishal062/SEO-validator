@@ -65,16 +65,16 @@ function getAllSnapshotFiles(url: string) {
 }
 
 // Deep omit keys from object/array, handles nested dataLayer gtm.start removal
-function deepOmit(obj: any, keys: string[]): any {
+function deepOmit(obj: unknown, keys: string[]): unknown {
   if (Array.isArray(obj)) {
     return obj.map(item => deepOmit(item, keys));
   } else if (obj && typeof obj === 'object') {
-    const result: any = {};
+    const result: Record<string, unknown> = {};
     for (const k in obj) {
-      if (k === 'dataLayer' && Array.isArray(obj[k])) {
-        result[k] = obj[k].map((dl: any) => {
+      if (k === 'dataLayer' && Array.isArray((obj as Record<string, unknown>)[k])) {
+        result[k] = ((obj as Record<string, unknown>)[k] as unknown[]).map((dl: unknown) => {
           if (dl && typeof dl === 'object') {
-            const dlCopy = { ...dl };
+            const dlCopy = { ...dl } as Record<string, unknown>;
             delete dlCopy['gtm.start'];
             return deepOmit(dlCopy, keys);
           }
@@ -83,7 +83,7 @@ function deepOmit(obj: any, keys: string[]): any {
         continue;
       }
       if (!keys.includes(k)) {
-        result[k] = deepOmit(obj[k], keys);
+        result[k] = deepOmit((obj as Record<string, unknown>)[k], keys);
       }
     }
     return result;
@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
     if (!result.ogDesc) missing.push('og:description');
     if (!result.twitterTitle) missing.push('twitter:title');
     if (!result.twitterDesc) missing.push('twitter:description');
-    (result as any).missing = missing;
+    (result as { missing?: string[] }).missing = missing;
 
     // Save snapshot only if content changed
     if (!fs.existsSync(SNAPSHOT_DIR)) fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    let snapshotData: any;
+    let snapshotData: Record<string, unknown>;
     if (isChanged) {
       snapshotData = { url, date: now, updated: now, ...result };
       fs.writeFileSync(path.join(SNAPSHOT_DIR, fileName), JSON.stringify(snapshotData, null, 2));

@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         let og: Record<string, string | null> = { ...cheerioOg };
         let twitter: Record<string, string | null> = { ...cheerioTwitter };
         let schema: unknown[] = [];
-        let dataLayer: any[] = [];
+        let dataLayer: unknown[] = [];
 
         // ONE Puppeteer visit per URL — extracts OG + Twitter + Schema + DataLayer together.
         // Puppeteer values override Cheerio values where present.

@@ -32,13 +32,13 @@ function DashboardInner() {
   // Compare: two snapshot pickers
   const [snapA, setSnapA] = useState<Snapshot | null>(null); // older
   const [snapB, setSnapB] = useState<Snapshot | null>(null); // newer
-  const [snapAData, setSnapAData] = useState<any>(null);
-  const [snapBData, setSnapBData] = useState<any>(null);
+  const [snapAData, setSnapAData] = useState<unknown>(null);
+  const [snapBData, setSnapBData] = useState<unknown>(null);
   const [loadingA, setLoadingA] = useState(false);
   const [loadingB, setLoadingB] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
-  const [currentResult, setCurrentResult] = useState<any>(null);
+  const [currentResult, setCurrentResult] = useState<unknown>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -81,7 +81,7 @@ function DashboardInner() {
   }
 
   // ── Fetch full data for each selected snapshot ────────────────────────────
-  async function fetchSnapData(snap: Snapshot, side: 'A' | 'B') {
+  const fetchSnapData = React.useCallback(async (snap: Snapshot, side: 'A' | 'B') => {
     const setLoading = side === 'A' ? setLoadingA : setLoadingB;
     const setData    = side === 'A' ? setSnapAData : setSnapBData;
     setLoading(true);
@@ -93,11 +93,11 @@ function DashboardInner() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   // Re-fetch when selection changes
-  useEffect(() => { if (snapA) fetchSnapData(snapA, 'A'); }, [snapA?.file]);
-  useEffect(() => { if (snapB) fetchSnapData(snapB, 'B'); }, [snapB?.file]);
+  useEffect(() => { if (snapA) fetchSnapData(snapA, 'A'); }, [snapA, fetchSnapData]);
+  useEffect(() => { if (snapB) fetchSnapData(snapB, 'B'); }, [snapB, fetchSnapData]);
 
   // ── Sync Now ───────────────────────────────────────────────────────────────
   async function handleSync() {
@@ -135,7 +135,7 @@ function DashboardInner() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
-    } catch (err) {
+    } catch {
       alert('Failed to download Excel report.');
     } finally {
       setDownloading(false);
@@ -494,7 +494,7 @@ function DashboardInner() {
                   Analysing {url}...
                 </div>
               )}
-              {currentResult && !analysisLoading && <SeoResultBox data={currentResult} />}
+              {!!currentResult && !analysisLoading && <SeoResultBox data={currentResult} />}
             </div>
           )}
 

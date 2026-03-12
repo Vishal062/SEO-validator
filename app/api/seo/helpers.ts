@@ -177,7 +177,7 @@ export async function fetchAllWithPuppeteer(
   og: Record<string, string | null>;
   twitter: Record<string, string | null>;
   schema: unknown[];
-  dataLayer: any[];
+  dataLayer: unknown[];
 }> {
   const browser = await puppeteer.launch({
     headless: true,
@@ -247,8 +247,8 @@ export async function fetchAllWithPuppeteer(
         });
 
       // --- DataLayer (GTM / GA4) ---
-      const dataLayer: any[] = (window as any).dataLayer
-        ? JSON.parse(JSON.stringify((window as any).dataLayer))
+      const dataLayer: unknown[] = (window as { dataLayer?: unknown[] }).dataLayer
+        ? JSON.parse(JSON.stringify((window as { dataLayer?: unknown[] }).dataLayer))
         : [];
 
       return { og, twitter, schemas, dataLayer };
@@ -316,7 +316,7 @@ export function getTwitterTags(html: string): Record<string, string | null> {
 export async function captureDataLayerWithPuppeteer(
   url: string,
   timeout = 30000
-): Promise<any[]> {
+): Promise<unknown[]> {
   const { dataLayer } = await fetchAllWithPuppeteer(url, timeout);
   return dataLayer;
 }
