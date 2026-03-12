@@ -21,15 +21,21 @@ export default function IntelliSeoPage() {
   const [urlReachable, setUrlReachable] = useState<(boolean|null)[]>([null]); // null = not checked, true = reachable, false = not reachable
   const [snapshotMeta, setSnapshotMeta] = useState<{updated: string|null, date: string|null}[]>([{updated: null, date: null}]);
   // Add index signatures for type safety
-  interface SnapshotsByLink { [url: string]: any[]; }
+  interface Snapshot {
+    file: string;
+    updated?: string;
+    date?: string;
+    [key: string]: unknown;
+  }
+  interface SnapshotsByLink { [url: string]: Snapshot[]; }
   interface SelectedSnapshot { [url: string]: string | null; }
   const [snapshotsByLink, setSnapshotsByLink] = useState<SnapshotsByLink>({});
   const [selectedSnapshot, setSelectedSnapshot] = useState<SelectedSnapshot>({});
   interface ComparisonResult {
     url: string;
-    diffs: Record<string, { current: any; snapshot: any }>;
-    snapshotData?: any;
-    currentResult?: any;
+    diffs?: Record<string, { current: unknown; snapshot: unknown }>;
+    snapshotData?: Snapshot;
+    currentResult?: Snapshot;
     error?: string;
   }
   const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
@@ -46,7 +52,7 @@ export default function IntelliSeoPage() {
   const dispatch = useDispatch();
 
   // Per-URL async dataLayer for Analytics tab
-  const [dataLayerAsyncMap, setDataLayerAsyncMap] = useState<Record<string, any[]>>({});
+  const [dataLayerAsyncMap, setDataLayerAsyncMap] = useState<Record<string, Record<string, unknown>[]>>({});
 
   // Check if scrolling is needed
   useEffect(() => {
@@ -141,7 +147,7 @@ export default function IntelliSeoPage() {
     }
     try {
       // Use HEAD for speed, fallback to GET if needed
-      const res = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+      await fetch(url, { method: 'HEAD', mode: 'no-cors' });
       // If we get here, assume reachable (no-cors may not give status, but won't throw for 404)
       setUrlReachable(prev => {
         const arr = [...prev];
@@ -193,7 +199,7 @@ export default function IntelliSeoPage() {
       return obj;
     });
     setSnapshotsByLink(prev => {
-      const obj: Record<string, any[]> = {};
+      const obj: SnapshotsByLink = {};
       updated.forEach(u => {
         if (isValidUrl(u)) {
           obj[normalizeUrlForSnapshot(u)] = prev[normalizeUrlForSnapshot(u)] || [];
@@ -234,7 +240,7 @@ export default function IntelliSeoPage() {
       return obj;
     });
     setSnapshotsByLink(prev => {
-      const obj: Record<string, any[]> = {};
+      const obj: SnapshotsByLink = {};
       updated.forEach(u => {
         if (isValidUrl(u)) {
           obj[normalizeUrlForSnapshot(u)] = prev[normalizeUrlForSnapshot(u)] || [];
@@ -318,7 +324,7 @@ export default function IntelliSeoPage() {
 
   // On URL change, fetch all snapshots for dropdown
   useEffect(() => {
-    urls.forEach((url, i) => {
+    urls.forEach((url) => {
       if (isValidUrl(url)) fetchAllSnapshots(url);
     });
     // eslint-disable-next-line
@@ -344,8 +350,8 @@ export default function IntelliSeoPage() {
     }
   }
   // Utility: Deep diff for objects/arrays, returns { path: { current, snapshot } }
-  function deepDiff(current: any, snapshot: any, path = ""): Record<string, { current: any; snapshot: any }> {
-    const diffs: Record<string, { current: any; snapshot: any }> = {};
+  function deepDiff(current: unknown, snapshot: unknown, path = ""): Record<string, { current: unknown; snapshot: unknown }> {
+    const diffs: Record<string, { current: unknown; snapshot: unknown }> = {};
     if (typeof current !== typeof snapshot) {
       diffs[path || "root"] = { current, snapshot };
       return diffs;
@@ -358,12 +364,14 @@ export default function IntelliSeoPage() {
       }
       return diffs;
     }
-    if (typeof current === "object" && current && snapshot) {
-      const keys = new Set([...Object.keys(current), ...Object.keys(snapshot)]);
+    if (typeof current === "object" && current && snapshot && typeof snapshot === "object") {
+      const currentObj = current as Record<string, unknown>;
+      const snapshotObj = snapshot as Record<string, unknown>;
+      const keys = new Set([...Object.keys(currentObj), ...Object.keys(snapshotObj)]);
       for (const key of keys) {
         if (["file", "date", "updated"].includes(key)) continue;
         const subPath = path ? `${path}.${key}` : key;
-        Object.assign(diffs, deepDiff(current[key], snapshot[key], subPath));
+        Object.assign(diffs, deepDiff(currentObj[key], snapshotObj[key], subPath));
       }
       return diffs;
     }
@@ -371,21 +379,6 @@ export default function IntelliSeoPage() {
       diffs[path] = { current, snapshot };
     }
     return diffs;
-  }
-  // Helper to format diff keys for user-friendly display
-  function formatDiffKey(key: string): string {
-    // headings[0].text → Heading H1 Text
-    const headingMatch = key.match(/^headings\[(\d+)\]\.text$/);
-    if (headingMatch) {
-      const idx = parseInt(headingMatch[1], 10);
-      const level = idx + 1;
-      return `Heading H${level} Text`;
-    }
-    // fallback: prettify other keys
-    return key
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/[._]/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
   }
   const compareSnapshots = async () => {
     // Always refresh snapshot lists for all URLs first
@@ -396,7 +389,7 @@ export default function IntelliSeoPage() {
     await new Promise(resolve => setTimeout(resolve, 0));
     // Re-read the latest snapshotsByLink
     const currentSnapshotsByLink = { ...snapshotsByLink };
-    const results: any[] = [];
+    const results: (ComparisonResult | { url: string; error: string })[] = [];
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
       if (!isValidUrl(url)) continue;
@@ -433,7 +426,7 @@ export default function IntelliSeoPage() {
   };
 
   // Get current SEO results from Redux (by order)
-  const resultsFromRedux = useSelector((state: RootState) => (state as RootState).seo.results || []);
+  // const resultsFromRedux = useSelector((state: RootState) => (state as RootState).seo.results || []); // Unused
 
   const hasValidUrl = urls.length > 0 && urls.every((url, idx) => url.trim() !== "" && isValidUrl(url) && urlReachable[idx] !== false);
 
@@ -586,7 +579,7 @@ export default function IntelliSeoPage() {
       urls.forEach((url, idx) => {
         if (isValidUrl(url)) checkSnapshot(url, idx);
       });
-    } catch (e) {
+    } catch {
       setImportError('Failed to fetch or parse the sheet!');
     } finally {
       setImportLoading(false);
@@ -829,12 +822,12 @@ export default function IntelliSeoPage() {
                       scrollbarWidth: 'thin',
                       scrollbarColor: '#cbd5e1 #f1f5f9'
                     }}
-                  >
-                    {results.map((r: any, i: number) => {
-                      const url = r && typeof r === 'object' && 'url' in r ? r.url : urls[i];
-                      const normUrl = normalizeUrlForSnapshot(url);
-                      return <SeoResultBox key={i} data={r} dataLayerAsync={dataLayerAsyncMap[normUrl]} />;
-                    })}
+                    >
+                      {results.map((r, i: number) => {
+                        const url = r && typeof r === 'object' && 'url' in r ? (r as { url: string }).url : urls[i];
+                        const normUrl = normalizeUrlForSnapshot(url);
+                        return <SeoResultBox key={i} data={r} dataLayerAsync={dataLayerAsyncMap[normUrl]} />;
+                      })}
                   </div>
                   {/* Custom scrollbar styling for webkit browsers */}
                   <style jsx>{`
@@ -907,7 +900,7 @@ export default function IntelliSeoPage() {
                   <div className="font-semibold text-blue-700 text-base mb-2 break-all">{res.url}</div>
                   {res.error ? (
                     <div className="text-red-500 text-sm font-semibold">{res.error}</div>
-                  ) : Object.keys(res.diffs).length === 0 ? (
+                  ) : !res.diffs || Object.keys(res.diffs).length === 0 ? (
                     <div className="text-green-600 text-base font-semibold">No differences found. The current SEO matches the selected snapshot.</div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -920,7 +913,7 @@ export default function IntelliSeoPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.entries(res.diffs).map(([key, diff]) => (
+                          {Object.entries(res.diffs || {}).map(([key, diff]) => (
                             <tr key={key} className="border-t border-gray-100">
                               <td className="px-4 py-2 font-semibold text-gray-800 whitespace-nowrap">{key}</td>
                               <td className="px-4 py-2 text-green-900 bg-green-50 font-mono break-all">{String(diff.current)}</td>

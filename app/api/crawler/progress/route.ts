@@ -1,7 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs/promises';
 import path from 'path';
+
+interface CrawlState {
+  id: string;
+  domain: string;
+  origin: string;
+  toVisit: string[];
+  visited: string[];
+  inProgress: string[];
+  done: boolean;
+  error: string | null;
+  config: {
+    maxPages: number;
+    concurrency: number;
+    batchSize: number;
+    timeout: number;
+    retryAttempts: number;
+  };
+  stats: {
+    totalFound: number;
+    totalProcessed: number;
+    startTime: string;
+    lastUpdate: string;
+    averageTimePerPage: number;
+    pagesPerSecond: number;
+  };
+  performance: {
+    browserPool: string[]; // Adjust if this is meant to be something else
+    activeConnections: number;
+    failedUrls: string[];
+    retryQueue: string[];
+  };
+}
 
 const STORAGE_DIR = path.resolve(process.cwd(), 'storage');
 
@@ -9,7 +41,7 @@ function getCrawlFilePath(id: string) {
   return path.join(STORAGE_DIR, `${id}.json`);
 }
 
-async function loadCrawlState(id: string) {
+async function loadCrawlState(id: string): Promise<CrawlState | null> {
   try {
     const file = getCrawlFilePath(id);
     const data = await fs.readFile(file, 'utf-8');
@@ -19,21 +51,21 @@ async function loadCrawlState(id: string) {
   }
 }
 
-async function saveCrawlState(id: string, state: any) {
+async function saveCrawlState(id: string, state: CrawlState) {
   state.stats.lastUpdate = new Date().toISOString();
   await fs.writeFile(getCrawlFilePath(id), JSON.stringify(state, null, 2));
 }
 
 // Browser pool management
 class BrowserPool {
-  private browsers: any[] = [];
+  private browsers: Browser[] = [];
   private maxBrowsers: number;
 
   constructor(maxBrowsers: number) {
     this.maxBrowsers = maxBrowsers;
   }
 
-  async getBrowser(): Promise<any> {
+  async getBrowser(): Promise<Browser> {
     if (this.browsers.length < this.maxBrowsers) {
       const browser = await puppeteer.launch({ 
         headless: true, 
@@ -54,14 +86,14 @@ class BrowserPool {
   }
 
   async closeAll() {
-    await Promise.all(this.browsers.map((browser: any) => browser.close()));
+    await Promise.all(this.browsers.map((browser: Browser) => browser.close()));
     this.browsers = [];
   }
 }
 
 // Process a single URL with retry logic
 async function processUrl(
-  browser: any, 
+  browser: Browser, 
   url: string, 
   origin: string, 
   timeout: number,
@@ -75,7 +107,7 @@ async function processUrl(
       
       // Set performance optimizations
       await page.setRequestInterception(true);
-      page.on('request', (req: any) => {
+      page.on('request', (req) => {
         const resourceType = req.resourceType();
         if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
           req.abort();
@@ -92,18 +124,18 @@ async function processUrl(
       // Extract links efficiently
       const links: string[] = await page.$$eval(
         'a',
-        (as: any[], origin: string) =>
+        (as: Element[], originStr: string) =>
           as
-            .map((a: any) => a.getAttribute('href'))
-            .filter((href: any) => !!href && !href.startsWith('javascript:') && !href.startsWith('#'))
-            .map((href: any) => {
+            .map((a) => a.getAttribute('href'))
+            .filter((href) => !!href && !href.startsWith('javascript:') && !href.startsWith('#'))
+            .map((href) => {
               try {
-                return new URL(href!, origin).href;
+                return new URL(href!, originStr).href;
               } catch {
                 return null;
               }
             })
-            .filter((href: any): href is string => !!href && href.startsWith(origin)),
+            .filter((href): href is string => !!href && href.startsWith(originStr)),
         origin
       );
 
@@ -131,7 +163,7 @@ async function processBatch(
   urls: string[], 
   origin: string, 
   browserPool: BrowserPool,
-  config: any
+  config: CrawlState['config']
 ): Promise<{ processed: string[]; newLinks: string[]; failed: string[] }> {
   const results = await Promise.allSettled(
     urls.map(url => 

@@ -59,8 +59,11 @@ const SeoCrawlerPro = () => {
       console.log(`Estimated crawl time: ${estimatedTime} seconds`);
       // Start polling for progress
       pollProgress(id, []);
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || "Failed to start crawl.");
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err) 
+        ? err.response?.data?.error || err.message 
+        : (err as Error).message || "Failed to start crawl.";
+      setError(errorMsg);
       setLoading(false);
     }
   };
@@ -68,7 +71,7 @@ const SeoCrawlerPro = () => {
   const pollProgress = async (id: string, currentPages: string[]) => {
     try {
       const res = await axios.get(`/api/crawler/progress?id=${encodeURIComponent(id)}`);
-      const { batch, done: crawlDone, visited, stats: crawlStats, performance: perfMetrics } = res.data;
+      const { batch, done: crawlDone, stats: crawlStats, performance: perfMetrics } = res.data;
       
       // Deduplicate
       const newPages = batch ? batch.filter((url: string) => !currentPages.includes(url)) : [];
@@ -84,8 +87,11 @@ const SeoCrawlerPro = () => {
       } else {
         setLoading(false);
       }
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || "Failed to fetch crawl progress.");
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err)
+        ? err.response?.data?.error || err.message
+        : (err as Error).message || "Failed to fetch crawl progress.";
+      setError(errorMsg);
       setLoading(false);
     }
   };

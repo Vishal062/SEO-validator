@@ -343,8 +343,8 @@ function syntaxHighlight(obj: unknown): string {
 }
 
 // Analytics tab — event explorer UI matching the reference design
-function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: any[]; dataLayerAsync?: any[] }) {
-  const [currentDataLayer, setCurrentDataLayer] = useState<any[]>(dataLayer || []);
+function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: Record<string, unknown>[]; dataLayerAsync?: Record<string, unknown>[] }) {
+  const [currentDataLayer, setCurrentDataLayer] = useState<Record<string, unknown>[]>(dataLayer || []);
   const [search, setSearch] = useState('');
   // Per-card view mode: 'flat' | 'json'
   const [viewMode, setViewMode] = useState<Record<number, 'flat' | 'json'>>({});
@@ -374,12 +374,12 @@ function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: any[]; dataLay
       return JSON.stringify(event).toLowerCase().includes(search.toLowerCase());
     });
 
-  const getEventName = (event: any): string =>
-    event?.event || (event?.['gtm.start'] ? 'gtm.start' : Object.keys(event)[0] || 'unknown');
+  const getEventName = (event: Record<string, unknown>): string =>
+    (event?.event as string) || (event?.['gtm.start'] ? 'gtm.start' : Object.keys(event)[0] || 'unknown');
 
   const getMode = (idx: number): 'flat' | 'json' => viewMode[idx] ?? 'json';
 
-  const handleCopy = (event: any, idx: number) => {
+  const handleCopy = (event: Record<string, unknown>, idx: number) => {
     navigator.clipboard.writeText(JSON.stringify(event, null, 2));
     setCopied(prev => ({ ...prev, [idx]: true }));
     setTimeout(() => setCopied(prev => ({ ...prev, [idx]: false })), 1500);
@@ -488,7 +488,7 @@ function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: any[]; dataLay
                               ) : typeof v === 'object' ? (
                                 <span style={{ color: '#ce9178' }}>{JSON.stringify(v)}</span>
                               ) : (
-                                <span style={{ color: '#ce9178' }}>"{String(v)}"</span>
+                                <span style={{ color: '#ce9178' }}>&quot;{String(v)}&quot;</span>
                               )}
                             </td>
                           </tr>
@@ -513,7 +513,7 @@ function AnalyticsTab({ dataLayer, dataLayerAsync }: { dataLayer: any[]; dataLay
 }
 
 
-export default function SeoResultBox({ data, dataLayerAsync }: Props & { dataLayerAsync?: any[] }) {
+export default function SeoResultBox({ data, dataLayerAsync }: Props & { dataLayerAsync?: Record<string, unknown>[] }) {
   const [tab, setTab] = useState('Overview');
   const safeData = (data || {}) as Record<string, unknown>;
 
@@ -550,7 +550,7 @@ export default function SeoResultBox({ data, dataLayerAsync }: Props & { dataLay
       {tab === 'Links' && <LinksList links={Array.isArray(safeData.links) ? safeData.links as { href?: string, anchor: string }[] : []} />}
       {tab === 'Schema' && <SchemaTable schema={Array.isArray(safeData.schema) ? safeData.schema : []} />}
       {tab === 'Social' && <SocialFields data={safeData} />}
-      {tab === 'Analytics' && <AnalyticsTab dataLayer={safeData.dataLayer as any[]} dataLayerAsync={dataLayerAsync} />}
+      {tab === 'Analytics' && <AnalyticsTab dataLayer={safeData.dataLayer as Record<string, unknown>[]} dataLayerAsync={dataLayerAsync} />}
       {tab !== 'Overview' && tab !== 'Headings' && tab !== 'Links' && tab !== 'Schema' && tab !== 'Social' && tab !== 'Analytics' && (
         <div className="text-gray-400 italic">No data for this tab yet.</div>
       )}

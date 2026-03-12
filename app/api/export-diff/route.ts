@@ -208,7 +208,7 @@ export async function GET(req: NextRequest) {
 
     // Bold the changed cells specifically
     if (d.status === 'changed') {
-      dataRow.getCell('oldVal').font = { color: { argb: 'FF9A3412' }, strikethrough: true };
+      dataRow.getCell('oldVal').font = { color: { argb: 'FF9A3412' }, strike: true };
       dataRow.getCell('newVal').font = { color: { argb: 'FF15803D' }, bold: true };
     }
   }
@@ -243,7 +243,7 @@ export async function GET(req: NextRequest) {
       r.getCell('oldVal').alignment = { wrapText: true, vertical: 'top' };
       r.getCell('newVal').alignment = { wrapText: true, vertical: 'top' };
       if (d.status === 'changed') {
-        r.getCell('oldVal').font = { color: { argb: 'FF9A3412' }, strikethrough: true };
+        r.getCell('oldVal').font = { color: { argb: 'FF9A3412' }, strike: true };
         r.getCell('newVal').font = { color: { argb: 'FF15803D' }, bold: true };
       }
     }
@@ -254,7 +254,7 @@ export async function GET(req: NextRequest) {
   const safeUrl = str(snapB.url || snapA.url).replace(/[^a-zA-Z0-9]/g, '_').slice(0, 40);
   const filename = `SEO_Diff_${safeUrl}_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
-  return new NextResponse(buffer as Buffer, {
+  return new NextResponse(buffer as unknown as ArrayBuffer, {
     status: 200,
     headers: {
       'Content-Type':        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

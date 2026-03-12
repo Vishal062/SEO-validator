@@ -46,7 +46,7 @@ async function detectSitemap(domain: string): Promise<SitemapUrl[]> {
       if (sitemapMatches) {
         sitemapUrls.push(...sitemapMatches.map(match => match.replace(/Sitemap:\s*/i, '')));
       }
-    } catch (error) {
+    } catch {
       // robots.txt not found, continue
     }
 
@@ -80,7 +80,7 @@ async function detectSitemap(domain: string): Promise<SitemapUrl[]> {
           await browser.close();
           return urls;
         }
-      } catch (error) {
+      } catch {
         // Continue to next sitemap URL
       }
     }

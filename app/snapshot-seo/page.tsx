@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import SeoResultBox from '@/components/seoResultBox';
 
-function formatDateFromFilenameOrData(file: string, data?: any) {
+function formatDateFromFilenameOrData(file: string, data?: Record<string, unknown>) {
   if (data && data.date) {
-    const date = new Date(data.date);
+    const date = new Date(data.date as string);
     if (!isNaN(date.getTime())) return date.toLocaleString();
   }
   // fallback to filename parsing
@@ -19,19 +19,18 @@ function formatDateFromFilenameOrData(file: string, data?: any) {
 
 export default function SnapshotSeoPage() {
   const [showScopeModal, setShowScopeModal] = useState(false);
-  const [selectedScope, setSelectedScope] = useState<'link' | 'website' | null>(null);
   const [url, setUrl] = useState("");
-  const [urlValid, setUrlValid] = useState(false);
+  // const [urlValid, setUrlValid] = useState(false); // Unused
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<unknown>(null);
   const [saved, setSaved] = useState(false);
-  const [compareResult, setCompareResult] = useState<any>(null);
+  const [compareResult, setCompareResult] = useState<Record<string, unknown> | null>(null);
   const [showOptions, setShowOptions] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [snapshots, setSnapshots] = useState<string[]>([]);
-  const [snapshotsLoading, setSnapshotsLoading] = useState(false);
-  const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
+  // const [snapshotsLoading, setSnapshotsLoading] = useState(false); // Unused
+  // const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null); // Unused
   const resultRef = useRef<HTMLDivElement>(null);
   // Add state to store snapshot dates
   const [snapshotDates, setSnapshotDates] = useState<Record<string, string>>({});
@@ -56,6 +55,7 @@ export default function SnapshotSeoPage() {
         setDatesLoading(false);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalOpen, snapshots.length]);
 
   function isValidUrl(url: string) {
@@ -74,7 +74,7 @@ export default function SnapshotSeoPage() {
     setSaved(false);
     setError("");
     const valid = isValidUrl(e.target.value.trim());
-    setUrlValid(valid);
+    // setUrlValid(valid);
     setShowOptions(valid);
     if (valid) {
       setShowScopeModal(true);
@@ -96,8 +96,11 @@ export default function SnapshotSeoPage() {
           resultRef.current.scrollIntoView({ behavior: 'smooth' });
         }
       }, 200);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to fetch SEO data.");
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err) 
+        ? err.response?.data?.error || err.message 
+        : (err as Error).message || "Failed to fetch SEO data.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -110,15 +113,18 @@ export default function SnapshotSeoPage() {
     setSaved(false);
     setLoading(false);
     setModalOpen(true);
-    setSnapshotsLoading(true);
+    // setSnapshotsLoading(true);
     try {
       // Fetch all snapshot filenames for this URL
       const res = await axios.get(`/api/snapshot-seo?url=${encodeURIComponent(url)}&list=1`);
       setSnapshots(res.data.files || []);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to load snapshots.");
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err)
+        ? err.response?.data?.error || err.message
+        : (err as Error).message || "Failed to load snapshots.";
+      setError(errorMsg);
     } finally {
-      setSnapshotsLoading(false);
+      // setSnapshotsLoading(false);
     }
   };
 
@@ -142,8 +148,11 @@ export default function SnapshotSeoPage() {
           resultRef.current.scrollIntoView({ behavior: 'smooth' });
         }
       }, 200);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to compare SEO data.");
+    } catch (err: unknown) {
+      const errorMsg = axios.isAxiosError(err)
+        ? err.response?.data?.error || err.message
+        : (err as Error).message || "Failed to compare SEO data.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -223,14 +232,14 @@ export default function SnapshotSeoPage() {
               <button
                 className="px-4 py-2 bg-gradient-to-r from-purple-400 to-indigo-500 text-white rounded-lg font-bold shadow hover:from-purple-500 hover:to-indigo-600 transition-all duration-200"
                 onClick={() => {
-                  setSelectedScope('link');
+                  // setSelectedScope('link');
                   window.location.href = `/snapshot-seo/dashboard?scope=link&url=${encodeURIComponent(url)}`;
                 }}
               >Work on this Link</button>
               <button
                 className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-amber-500 text-white rounded-lg font-bold shadow hover:from-emerald-500 hover:to-amber-600 transition-all duration-200"
                 onClick={() => {
-                  setSelectedScope('website');
+                  // setSelectedScope('website');
                   window.location.href = `/snapshot-seo/dashboard?scope=website&url=${encodeURIComponent(url)}`;
                 }}
               >Work on Entire Website</button>
@@ -295,7 +304,7 @@ export default function SnapshotSeoPage() {
               <span className="ml-3 text-gray-700">Processing...</span>
             </div>
           )}
-          {!loading && result && (
+          {!!result && !loading && (
             <div ref={resultRef} className="relative">
               <SeoResultBox data={result} />
               {saved && <div className="text-green-600 mt-2">Snapshot saved!</div>}
@@ -315,7 +324,7 @@ export default function SnapshotSeoPage() {
                 <div className="flex-1 p-6 bg-amber-50">
                   <div className="flex flex-col gap-1 mb-2">
                     <span className="text-lg font-bold text-amber-700">Selected Snapshot</span>
-                    <span className="text-xs text-gray-500">{compareResult.previous && compareResult.previous.date ? new Date(compareResult.previous.date).toLocaleString() : ''}</span>
+                    <span className="text-xs text-gray-500">{compareResult.previous && (compareResult.previous as Record<string, unknown>).date ? new Date((compareResult.previous as Record<string, unknown>).date as string).toLocaleString() : ''}</span>
                   </div>
                   {compareResult.previous ? (
                     <SeoResultBox data={compareResult.previous} />

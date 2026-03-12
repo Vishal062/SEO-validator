@@ -14,7 +14,7 @@ function getCrawlFilePath(id: string) {
   return path.join(STORAGE_DIR, `${id}.json`);
 }
 
-async function saveCrawlState(id: string, state: any) {
+async function saveCrawlState(id: string, state: Record<string, unknown>) {
   await fs.mkdir(STORAGE_DIR, { recursive: true });
   await fs.writeFile(getCrawlFilePath(id), JSON.stringify(state, null, 2));
 }
